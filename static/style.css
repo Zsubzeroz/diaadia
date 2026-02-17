@@ -1,0 +1,139 @@
+:root {
+    --bg-dark: #121212;
+    --card-dark: #1e1e1e;
+    --modal-bg: #252525;
+    --text-white: #ffffff;
+    --text-gray: #aaaaaa;
+    --line-color: #333333;
+    --primary: #3498db;
+}
+
+body {
+    background-color: var(--bg-dark);
+    font-family: 'Inter', sans-serif;
+    color: var(--text-white);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.container { width: 100%; max-width: 500px; padding: 20px 20px 100px 20px; }
+
+header { margin-bottom: 30px; }
+header h2 { margin: 0; font-weight: 600; }
+header p { color: var(--text-gray); margin-top: 5px; }
+
+/* TIMELINE */
+.timeline { position: relative; }
+.timeline-row { display: flex; margin-bottom: 20px; position: relative; }
+.time-col { width: 50px; text-align: right; padding-right: 15px; color: var(--text-gray); font-size: 14px; padding-top: 15px; }
+.line-col { width: 40px; position: relative; display: flex; justify-content: center; }
+.line { position: absolute; top: 0; bottom: -25px; width: 2px; background: var(--line-color); z-index: 0; }
+.timeline-row:last-child .line { height: 100%; bottom: auto; }
+.icon-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 1; color: white; margin-top: 5px; }
+.card-col { flex-grow: 1; padding-left: 15px; }
+
+/* TASK CARD */
+.task-card {
+    background: var(--card-dark);
+    padding: 15px;
+    border-radius: 12px;
+    display: flex; align-items: center;
+    border: 1px solid transparent;
+    cursor: grab;
+    transition: 0.2s;
+}
+.task-card:active { cursor: grabbing; }
+.drag-handle { color: #444; margin-right: 10px; font-size: 12px; }
+.card-content { flex-grow: 1; }
+.card-content h3 { margin: 0; font-size: 16px; }
+.card-content p { margin: 3px 0 0; font-size: 12px; color: var(--text-gray); }
+.card-actions a { color: var(--text-gray); margin-left: 10px; text-decoration: none; }
+.btn-check:hover { color: #2ecc71; }
+.btn-del:hover { color: #e74c3c; }
+
+/* Efeitos */
+.sortable-ghost { opacity: 0.4; border: 1px dashed var(--primary); }
+.row-completed .task-card { opacity: 0.5; background: #181818; }
+.row-completed h3 { text-decoration: line-through; }
+.row-completed .icon-circle { filter: grayscale(100%); }
+
+/* --- BOTÃO FLUTUANTE (FAB) --- */
+.fab-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px; /* Canto direito */
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    font-size: 24px;
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+    cursor: pointer;
+    display: flex; justify-content: center; align-items: center;
+    transition: transform 0.2s;
+    z-index: 100;
+}
+.fab-btn:hover { transform: scale(1.1); }
+
+/* --- MODAL --- */
+.modal-overlay {
+    display: none; /* Escondido por padrão */
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    justify-content: center; align-items: center;
+    z-index: 200;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: var(--modal-bg);
+    padding: 25px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 350px;
+    border: 1px solid #333;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.close-btn { font-size: 28px; cursor: pointer; color: var(--text-gray); }
+
+form label { display: block; margin-bottom: 5px; font-size: 13px; color: var(--text-gray); margin-top: 15px; }
+input, select {
+    width: 100%;
+    padding: 12px;
+    background: #333;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    box-sizing: border-box; /* Garante que o padding não estoure a largura */
+}
+
+.row-inputs { display: flex; gap: 10px; }
+.input-group { flex: 1; }
+.color-picker { padding: 5px; height: 45px; cursor: pointer; }
+
+.btn-save {
+    width: 100%;
+    padding: 15px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 25px;
+    cursor: pointer;
+}

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Rotina</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h2>Rotina Diária</h2>
+            <p>Organize seu dia com estilo ✨</p>
+        </header>
+
+        <div class="timeline" id="lista-tarefas">
+            {% for tarefa in tarefas %}
+            <div class="timeline-row {{ 'row-completed' if tarefa.feita else '' }}" data-id="{{ tarefa.id }}">
+                <div class="time-col"><span>{{ tarefa.horario }}</span></div>
+                <div class="line-col">
+                    <div class="line"></div>
+                    <div class="icon-circle" style="background-color: {{ tarefa.cor }}; box-shadow: 0 0 10px {{ tarefa.cor }}80;">
+                        <i class="fas {{ tarefa.icone }}"></i>
+                    </div>
+                </div>
+                <div class="card-col">
+                    <div class="task-card">
+                        <div class="drag-handle"><i class="fas fa-grip-lines"></i></div>
+                        <div class="card-content">
+                            <h3>{{ tarefa.titulo }}</h3>
+                            <p>{{ tarefa.subtitulo }}</p>
+                        </div>
+                        <div class="card-actions">
+                            <a href="/atualizar/{{ tarefa.id }}" class="btn-check"><i class="fas {{ 'fa-rotate-left' if tarefa.feita else 'fa-check' }}"></i></a>
+                            <a href="/deletar/{{ tarefa.id }}" class="btn-del"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- BOTÃO FLUTUANTE DE ADICIONAR -->
+    <button class="fab-btn" onclick="abrirModal()">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- JANELA MODAL (Escondida por padrão) -->
+    <div id="modalAdicionar" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nova Tarefa</h3>
+                <span onclick="fecharModal()" class="close-btn">&times;</span>
+            </div>
+
+            <form action="/adicionar" method="POST">
+                <label>O que vamos fazer?</label>
+                <input type="text" name="titulo" placeholder="Ex: Academia" required>
+
+                <label>Detalhe (Opcional)</label>
+                <input type="text" name="subtitulo" placeholder="Ex: Treino de perna">
+
+                <div class="row-inputs">
+                    <div class="input-group">
+                        <label>Horário</label>
+                        <input type="time" name="horario" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Cor</label>
+                        <input type="color" name="cor" value="#3498db" class="color-picker">
+                    </div>
+                </div>
+
+                <label>Escolha um Ícone</label>
+                <div class="icon-select-container">
+                    <!-- Truque para selecionar ícones visualmente -->
+                    <select name="icone" class="icon-select">
+                        <option value="fa-check">✔ Padrão</option>
+                        <option value="fa-code">💻 Código</option>
+                        <option value="fa-book">📖 Estudo</option>
+                        <option value="fa-dumbbell">💪 Treino</option>
+                        <option value="fa-graduation-cap">🎓 Faculdade</option>
+                        <option value="fa-gamepad">🎮 Jogos</option>
+                        <option value="fa-music">🎹 Música</option>
+                        <option value="fa-bed">🛏️ Dormir</option>
+                        <option value="fa-utensils">🍽️ Comer</option>
+                        <option value="fa-briefcase">💼 Trabalho</option>
+                        <option value="fa-language">🗣️ Idiomas</option>
+                        <option value="fa-hands-asl-interpreting">👐 Libras</option>
+                        <option value="fa-book-bible">✝️ Bíblia</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-save">Salvar Tarefa</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Lógica do Modal
+        function abrirModal() {
+            document.getElementById("modalAdicionar").style.display = "flex";
+        }
+        function fecharModal() {
+            document.getElementById("modalAdicionar").style.display = "none";
+        }
+
+        // Lógica do Drag and Drop (Sortable)
+        var el = document.getElementById('lista-tarefas');
+        var sortable = Sortable.create(el, {
+            animation: 300,
+            handle: '.task-card',
+            ghostClass: 'sortable-ghost',
+            onEnd: function (evt) {
+                var order = sortable.toArray();
+                fetch('/reordenar', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ ordem: order }),
+                });
+            }
+        });
+    </script>
+</body>
+</html>
